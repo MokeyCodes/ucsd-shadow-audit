@@ -1,7 +1,50 @@
 {
   "courses": [
-    {"courseId":"CSE11","title":"Intro to Programming","units":4},
-    {"courseId":"MATH20A","title":"Calculus for Engineering","units":4},
-    {"courseId":"MATH20B","title":"Integral Calculus","units":4}
+    {
+      "courseId": "CSE11",
+      "title": "Intro to Programming",
+      "units": 4,
+      "sections": [
+        {
+          "sectionId": "A00",
+          "instructor": "Staff",
+          "meetings": [
+            { "day": "M", "startMin": 600, "endMin": 650 },
+            { "day": "W", "startMin": 600, "endMin": 650 },
+            { "day": "F", "startMin": 600, "endMin": 650 }
+          ]
+        }
+      ]
+    },
+    {
+      "courseId": "MATH20A",
+      "title": "Calculus for Engineering",
+      "units": 4,
+      "sections": [
+        {
+          "sectionId": "A00",
+          "instructor": "Staff",
+          "meetings": [
+            { "day": "T", "startMin": 660, "endMin": 750 },
+            { "day": "Th", "startMin": 660, "endMin": 750 }
+          ]
+        }
+      ]
+    },
+    {
+      "courseId": "MATH20B",
+      "title": "Integral Calculus",
+      "units": 4,
+      "sections": [
+        {
+          "sectionId": "A00",
+          "instructor": "Staff",
+          "meetings": [
+            { "day": "T", "startMin": 780, "endMin": 870 },
+            { "day": "Th", "startMin": 780, "endMin": 870 }
+          ]
+        }
+      ]
+    }
   ]
 }
