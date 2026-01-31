@@ -3,6 +3,8 @@ const cors = require('cors');
 const catalog = require('./data/catalog.json');
 const degree = require('./data/sample_degree.json');
 const { runAudit } = require('./auditEngine');
+const { generateSchedules } = require('./scheduleGenerator'); // Issue #3
+
 
 const app = express();
 app.use(cors());
@@ -22,6 +24,17 @@ app.post('/api/audit', (req, res) => {
   const result = runAudit(credits, degree);
   res.json(result);
 });
+
+app.post('/api/generate-schedules', (req, res) => {
+  const termId = req.body.termId || 'SP26';
+  const coursesToTake = req.body.coursesToTake || [];
+  const constraints = req.body.constraints || { maxUnits: 16 };
+
+  const schedules = generateSchedules({ termId, coursesToTake, constraints, catalog });
+
+  res.json({ schedules });
+});
+
 
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
