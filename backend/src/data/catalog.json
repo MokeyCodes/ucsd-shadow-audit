@@ -1,0 +1,7 @@
+{
+  "courses": [
+    {"courseId":"CSE11","title":"Intro to Programming","units":4},
+    {"courseId":"MATH20A","title":"Calculus for Engineering","units":4},
+    {"courseId":"MATH20B","title":"Integral Calculus","units":4}
+  ]
+}

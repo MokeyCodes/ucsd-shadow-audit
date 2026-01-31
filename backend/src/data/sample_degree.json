@@ -1,0 +1,9 @@
+{
+  "majorId": "CSE-BS",
+  "name": "Computer Science B.S.",
+  "requirements": [
+    { "id": "R1", "courseId": "CSE11", "units": 4, "description": "Intro programming" },
+    { "id": "R2", "courseId": "MATH20A", "units": 4, "description": "Calculus I" },
+    { "id": "R3", "courseId": "MATH20B", "units": 4, "description": "Calculus II" }
+  ]
+}
