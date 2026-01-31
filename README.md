@@ -37,8 +37,8 @@ This is a *planning and exploration tool*, not an authoritative degree audit.
 
 ---
 
-<!--
-```text
+
+```
 ucsd-shadow-audit/
 ├─ backend/        # Express API + audit logic
 ├─ frontend/       # React UI
@@ -46,7 +46,6 @@ ucsd-shadow-audit/
 ├─ .github/        # CI / workflows
 └─ README.md
 ```
--->
 
 ---
 
@@ -55,7 +54,7 @@ ucsd-shadow-audit/
 ### 1. Clone
 
 ```bash
-git clone <repo-url>
+git clone https://github.com/MokeyCodes/ucsd-shadow-audit
 cd ucsd-shadow-audit
 ```
 
@@ -101,14 +100,6 @@ npm run dev
 * This tool is **not official** and **not guaranteed accurate**
 * Degree requirements change — always verify with UCSD official tools
 * Ambiguous credits require **manual user confirmation**
-
----
-
-## Team workflow (suggested)
-
-* `main` branch = stable demo
-* Feature branches for audit logic, scheduling, UI polish
-* Small, fast commits (hackathon style)
 
 ---
 
