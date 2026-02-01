@@ -4,6 +4,13 @@
   "requirements": [
     { "id": "R1", "courseId": "CSE11", "units": 4, "description": "Intro programming" },
     { "id": "R2", "courseId": "MATH20A", "units": 4, "description": "Calculus I" },
-    { "id": "R3", "courseId": "MATH20B", "units": 4, "description": "Calculus II" }
+    { "id": "R3", "courseId": "MATH20B", "units": 4, "description": "Calculus II" },
+    {
+      "id": "R4",
+      "type": "CoursePool",
+      "count": 2,
+      "candidates": ["MATH20A", "MATH20B", "MATH18"],
+      "description": "Choose 2 from lower-division math"
+    }
   ]
 }
