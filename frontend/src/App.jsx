@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import ScheduleViewer from "./ScheduleViewer";
+import "./App.css";
 
 export default function App() {
   // PAGE SWITCH
@@ -61,112 +62,202 @@ export default function App() {
   // ---------- Schedule Page ----------
   if (page === "schedule") {
     return (
-      <div style={{ padding: 24 }}>
-        <button onClick={() => setPage("audit")} style={{ padding: 8, marginBottom: 16 }}>
-          ← Back to Degree Audit
-        </button>
-        <ScheduleViewer />
-      </div>
+      <div className="page">
+  <button className="btn" onClick={() => setPage("audit")} style={{ marginBottom: 16 }}>
+    ← Back to Degree Audit
+  </button>
+  <ScheduleViewer />
+</div>
+
     );
   }
 
   // ---------- Audit Page ----------
   return (
-    <div style={{ fontFamily: "system-ui, sans-serif", padding: 24, maxWidth: 900 }}>
-      <h1>UCSD Shadow Degree Audit — Demo</h1>
-      <p style={{ color: "#666" }}>Enter course IDs or add AP credits, then run the audit.</p>
+    <div className="page">
+  <div className="header">
+    <div>
+      <h1 className="title">UCSD Shadow Degree Audit</h1>
+      <p className="subtitle">Enter course IDs or add AP credits, then run the audit.</p>
+    </div>
+    <span className="pill">Unofficial demo • deterministic rules</span>
+  </div>
 
-      {/* Course ID input */}
-      <div style={{ display: "flex", gap: 8, marginBottom: 12 }}>
-        <input
-          value={input}
-          onChange={e => setInput(e.target.value)}
-          onKeyDown={e => { if (e.key === "Enter") addCredit(); }}
-          placeholder="Type course ID (e.g. CSE11)"
-          style={{ padding: "8px 10px", flex: 1 }}
-        />
-        <button onClick={addCredit} style={{ padding: "8px 12px" }}>Add</button>
-        <button onClick={runAudit} style={{ padding: "8px 12px" }} disabled={loading}>
-          {loading ? "Running…" : "Run Audit"}
-        </button>
-        <button onClick={() => setPage("schedule")} style={{ padding: "8px 12px" }}>
-          View Schedules
-        </button>
+
+      <section className="section">
+  <h2>Enter Credits</h2>
+  <div className="card">
+    <div className="row" style={{ marginBottom: 10 }}>
+      <input
+        className="input"
+        value={input}
+        onChange={e => setInput(e.target.value)}
+        onKeyDown={e => { if (e.key === "Enter") addCredit(); }}
+        placeholder="Type course ID (e.g. CSE11)"
+      />
+
+      <button className="btn" onClick={addCredit}>Add</button>
+
+      <button className="btn btnPrimary" onClick={runAudit} disabled={loading}>
+        {loading ? "Running…" : "Run Audit"}
+      </button>
+
+      <button className="btn btnGhost" onClick={() => setPage("schedule")}>
+        View Schedules →
+      </button>
+    </div>
+
+    <div className="row">
+      <span className="muted" style={{ minWidth: 70 }}>AP Credit</span>
+
+      <select className="select" value={apExam} onChange={e => setApExam(e.target.value)}>
+        <option>Calculus AB</option>
+        <option>Calculus BC</option>
+        <option>Computer Science A</option>
+        <option>Physics C Mechanics</option>
+        <option>Physics C Electricity and Magnetism</option>
+        <option>Chemistry</option>
+        <option>Biology</option>
+        <option>Statistics</option>
+        <option>English Language and Composition</option>
+        <option>Microeconomics</option>
+        <option>Macroeconomics</option>
+        <option>Environmental Science</option>
+      </select>
+
+      <select className="select" value={apScore} onChange={e => setApScore(e.target.value)} style={{ width: 90 }}>
+        <option>1</option><option>2</option><option>3</option><option>4</option><option>5</option>
+      </select>
+
+      <button className="btn" onClick={addApCredit}>Add AP</button>
+    </div>
+
+    <div style={{ marginTop: 12 }}>
+      {credits.length === 0 ? (
+        <em className="muted">No credits added</em>
+      ) : (
+        <div className="chips">
+          {credits.map((c, idx) => {
+            const label = typeof c === "string" ? c : (c?.label || "UNKNOWN");
+            return (
+              <div key={`${label}-${idx}`} className="chip">
+                <strong>{label}</strong>
+                <button onClick={() => removeCreditAt(idx)} aria-label={`Remove ${label}`}>
+                  ✕
+                </button>
+              </div>
+            );
+          })}
+        </div>
+      )}
+    </div>
+  </div>
+</section>
+
+      <hr className="divider" />
+
+<section className="section">
+  <h2>Audit Results</h2>
+
+  {!audit && <div className="muted">No audit run yet.</div>}
+
+  {audit?.error && (
+    <div className="badgeBad">
+      <span>❌</span>
+      <span>{audit.error}</span>
+    </div>
+  )}
+
+  {audit && !audit.error && (
+    <div className="grid2">
+      <div className="card">
+        <div className="badgeOk" style={{ marginBottom: 10 }}>
+          <span>✅</span>
+          <span>Summary</span>
+        </div>
+
+        <div className="kv">
+          <div>Major</div>
+          <div><strong>{audit.majorId || "—"}</strong></div>
+
+          <div>Expanded course IDs</div>
+          <div>{audit.expandedCourseIds?.length ? audit.expandedCourseIds.join(", ") : "—"}</div>
+        </div>
       </div>
 
-      {/* AP credit input */}
-      <div style={{ display: "flex", gap: 8, marginBottom: 12, alignItems: "center" }}>
-        <span style={{ color: "#666", minWidth: 70 }}>AP Credit:</span>
-        <select value={apExam} onChange={e => setApExam(e.target.value)} style={{ padding: "8px 10px" }}>
-          <option>Calculus AB</option>
-          <option>Calculus BC</option>
-          <option>Computer Science A</option>
-          <option>Physics C Mechanics</option>
-          <option>Physics C Electricity and Magnetism</option>
-          <option>Chemistry</option>
-          <option>Biology</option>
-          <option>Statistics</option>
-          <option>English Language and Composition</option>
-          <option>Microeconomics</option>
-          <option>Macroeconomics</option>
-          <option>Environmental Science</option>
-        </select>
+      <div className="card">
+        <div className="row" style={{ justifyContent: "space-between", marginBottom: 10 }}>
+          <div className="badgeOk">
+            <span>✔</span>
+            <span>Satisfied</span>
+          </div>
+          <div className="badgeBad">
+            <span>✖</span>
+            <span>Remaining</span>
+          </div>
+        </div>
 
-        <select value={apScore} onChange={e => setApScore(e.target.value)} style={{ padding: "8px 10px", width: 80 }}>
-          <option>1</option>
-          <option>2</option>
-          <option>3</option>
-          <option>4</option>
-          <option>5</option>
-        </select>
+        <div className="grid2">
+          <div>
+            {audit.satisfied?.length ? (
+              <ul className="list">
+                {audit.satisfied.map(r => (
+                  <li key={r.requirementId}>
+                    <strong>{r.requirementId}</strong> — {r.description || "—"}
+                    {r.matchedCourseIds?.length ? (
+                      <span className="muted"> ({r.matchedCourseIds.join(", ")})</span>
+                    ) : null}
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <div className="muted">None</div>
+            )}
+          </div>
 
-        <button onClick={addApCredit} style={{ padding: "8px 12px" }}>Add AP</button>
+          <div>
+            {audit.remaining?.length ? (
+              <ul className="list">
+                {audit.remaining.map(r => (
+                  <li key={r.requirementId}>
+                    <strong>{r.requirementId}</strong> — {r.description || "—"}
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <div className="muted">None</div>
+            )}
+          </div>
+        </div>
       </div>
 
-      {/* Credits chips */}
-      <div style={{ marginBottom: 18 }}>
-        {credits.length === 0 ? <em>No credits added</em> : (
-          <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-            {credits.map((c, idx) => {
-              const label = typeof c === "string" ? c : (c?.label || "UNKNOWN");
-              return (
-                <div key={`${label}-${idx}`} style={{ border: "1px solid #ddd", padding: "6px 8px", borderRadius: 6 }}>
-                  <strong>{label}</strong>
-                  <button onClick={() => removeCreditAt(idx)} style={{ marginLeft: 8 }}>x</button>
+      <div className="card" style={{ gridColumn: "1 / -1" }}>
+        <h3 style={{ margin: 0, fontSize: 14, color: "var(--muted)" }}>Justification Log</h3>
+        <div style={{ marginTop: 10, display: "grid", gap: 10 }}>
+          {audit.justificationLog?.length ? (
+            audit.justificationLog.map((l, i) => (
+              <div className="logItem" key={`${l.requirementId}-${i}`}>
+                <div style={{ fontSize: 14 }}>
+                  <strong>{l.requirementId}</strong>{" "}
+                  <span className="muted">matched by</span>{" "}
+                  <strong>{l.matchedBy ?? "—"}</strong>
                 </div>
-              );
-            })}
-          </div>
-        )}
+                <div className="muted" style={{ marginTop: 4, lineHeight: 1.35 }}>
+                  {l.reason}
+                </div>
+              </div>
+            ))
+          ) : (
+            <div className="muted">—</div>
+          )}
+        </div>
       </div>
+    </div>
+  )}
+</section>
 
-      <hr />
 
-      <section style={{ marginTop: 16 }}>
-        <h2>Audit result</h2>
-        {!audit && <div style={{ color: "#666" }}>No audit run yet.</div>}
-
-        {audit?.error && <div style={{ color: "red" }}>{audit.error}</div>}
-
-        {audit && !audit.error && (
-          <div style={{ background: "#fafafa", padding: 12, borderRadius: 6, whiteSpace: "pre-wrap" }}>
-            <strong>Major:</strong> {audit.majorId || "—"}{"\n"}
-            <strong>Expanded course IDs:</strong>{" "}
-            {audit.expandedCourseIds?.length ? audit.expandedCourseIds.join(", ") : "—"}{"\n\n"}
-
-            <strong>Satisfied requirements:</strong>{"\n"}
-            {audit.satisfied?.length ? audit.satisfied.map(r => `• ${r.requirementId} — ${r.description || "—"} (${(r.matchedCourseIds || []).join(", ") || "—"})`).join("\n") : "None"}{"\n\n"}
-
-            <strong>Remaining requirements:</strong>{"\n"}
-            {audit.remaining?.length ? audit.remaining.map(r => `• ${r.requirementId} — ${r.description || "—"}`).join("\n") : "None"}{"\n\n"}
-
-            <strong>Justification log:</strong>{"\n"}
-            {audit.justificationLog?.length ? audit.justificationLog.map((l,i) => `• ${l.requirementId}: ${l.matchedBy ?? "—"} (${l.reason})`).join("\n") : "—"}
-          </div>
-        )}
-      </section>
-
-      <footer style={{ marginTop: 32, color: "#888", fontSize: 13 }}>
+      <footer className="footer">
         This is an unofficial demo. No UCSD credentials are used or requested.
       </footer>
     </div>

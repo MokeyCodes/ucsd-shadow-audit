@@ -110,6 +110,7 @@ export default function ScheduleViewer({
 
   // NEW: Diagnostics for empty schedules
   const [diagnostic, setDiagnostic] = useState("");
+  const [showDebug, setShowDebug] = useState(false);
 
   const selected = schedules[index];
 
@@ -348,117 +349,128 @@ export default function ScheduleViewer({
   const selectedScore = selected?.scheduleId ? scoresByScheduleId[selected.scheduleId] : null;
 
   // ---- Render states ----
-  if (loading) return <div style={{ padding: 20 }}>Loading schedules…</div>;
-  if (loadErr) return <div style={{ padding: 20, color: "red" }}>{loadErr}</div>;
+  if (loading) return <div className="card">Loading schedules…</div>;
+  if (loadErr) return <div className="badgeBad"><span>❌</span><span>{loadErr}</span></div>;
 
   // ---- UI ----
   return (
-    <div style={{ padding: 20 }}>
+    <div className="section">
       {/* Schedule Inputs */}
-      <div style={{ border: "1px solid #ddd", borderRadius: 8, padding: 12, marginBottom: 16 }}>
-        <div style={{ fontWeight: 800, marginBottom: 8 }}>Schedule Builder</div>
+      <div className="card" style={{ marginBottom: 16 }}>
+  <div className="row" style={{ justifyContent: "space-between", marginBottom: 10 }}>
+    <div style={{ fontWeight: 800 }}>Schedule Builder</div>
+    <div className="pill">Press Enter to generate</div>
+  </div>
 
-        <div style={{ display: "flex", gap: 12, alignItems: "flex-end", flexWrap: "wrap" }}>
-          <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-            <label style={{ fontSize: 12, color: "#666" }}>Term</label>
-            <input
-              value={draftTermId}
-              onChange={(e) => setDraftTermId(e.target.value)}
-              placeholder="SP26"
-              style={{ padding: "8px 10px", width: 120 }}
-            />
-          </div>
+  <div className="row" style={{ alignItems: "flex-end" }}>
+    <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+      <label className="small">Term</label>
+      <input
+        className="input"
+        value={draftTermId}
+        onChange={(e) => setDraftTermId(e.target.value)}
+        placeholder="SP26"
+        style={{ width: 140 }}
+      />
+    </div>
 
-          <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-            <label style={{ fontSize: 12, color: "#666" }}>Courses (comma/space separated)</label>
-            <input
-              value={draftCoursesText}
-              onChange={(e) => setDraftCoursesText(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === "Enter") {
-                  e.preventDefault();
-                  const parsed = parseCourses(draftCoursesText);
-                  if (!parsed.length) {
-                    setLoadErr("Enter at least one courseId (e.g., CSE11).");
-                    return;
-                  }
-                  setLoadErr("");
-                  setDiagnostic("");
-                  setActiveTermId(draftTermId.trim() || "SP26");
-                  setActiveCoursesToTake(parsed);
-                  setActiveConstraints({
-                    maxUnits: Number.isFinite(Number(draftMaxUnits)) ? Number(draftMaxUnits) : 16,
-                  });
-                  setIndex(0);
-                }
-              }}
-              placeholder="CSE11, MATH20A, CSE12"
-              style={{ padding: "8px 10px", minWidth: 340 }}
-            />
-          </div>
+    <div style={{ display: "flex", flexDirection: "column", gap: 4, flex: 1, minWidth: 280 }}>
+      <label className="small">Courses (comma/space separated)</label>
+      <input
+        className="input"
+        value={draftCoursesText}
+        onChange={(e) => setDraftCoursesText(e.target.value)}
+        onKeyDown={(e) => {
+          if (e.key === "Enter") {
+            e.preventDefault();
+            const parsed = parseCourses(draftCoursesText);
+            if (!parsed.length) {
+              setLoadErr("Enter at least one courseId (e.g., CSE11).");
+              return;
+            }
+            setLoadErr("");
+            setDiagnostic("");
+            setActiveTermId(draftTermId.trim() || "SP26");
+            setActiveCoursesToTake(parsed);
+            setActiveConstraints({
+              maxUnits: Number.isFinite(Number(draftMaxUnits)) ? Number(draftMaxUnits) : 16,
+            });
+            setIndex(0);
+          }
+        }}
+        placeholder="CSE11, MATH20A, CSE12"
+      />
+    </div>
 
-          <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-            <label style={{ fontSize: 12, color: "#666" }}>Max Units</label>
-            <input
-              type="number"
-              value={draftMaxUnits}
-              onChange={(e) => setDraftMaxUnits(e.target.value)}
-              min={0}
-              style={{ padding: "8px 10px", width: 110 }}
-            />
-          </div>
+    <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+      <label className="small">Max Units</label>
+      <input
+        className="input"
+        type="number"
+        value={draftMaxUnits}
+        onChange={(e) => setDraftMaxUnits(e.target.value)}
+        min={0}
+        style={{ width: 140 }}
+      />
+    </div>
 
-          <button
-            onClick={() => {
-              const parsed = parseCourses(draftCoursesText);
-              if (!parsed.length) {
-                setLoadErr("Enter at least one courseId (e.g., CSE11).");
-                return;
-              }
+    <button
+      className="btn btnPrimary"
+      onClick={() => {
+        const parsed = parseCourses(draftCoursesText);
+        if (!parsed.length) {
+          setLoadErr("Enter at least one courseId (e.g., CSE11).");
+          return;
+        }
 
-              setLoadErr("");
-              setDiagnostic("");
-              setActiveTermId(draftTermId.trim() || "SP26");
-              setActiveCoursesToTake(parsed);
-              setActiveConstraints({
-                maxUnits: Number.isFinite(Number(draftMaxUnits)) ? Number(draftMaxUnits) : 16,
-              });
-              setIndex(0);
-            }}
-            style={{ padding: "8px 12px" }}
-          >
-            Generate
-          </button>
-        </div>
+        setLoadErr("");
+        setDiagnostic("");
+        setActiveTermId(draftTermId.trim() || "SP26");
+        setActiveCoursesToTake(parsed);
+        setActiveConstraints({
+          maxUnits: Number.isFinite(Number(draftMaxUnits)) ? Number(draftMaxUnits) : 16,
+        });
+        setIndex(0);
+      }}
+    >
+      Generate
+    </button>
+  </div>
 
-        <div style={{ marginTop: 8, color: "#666", fontSize: 12 }}>
-          Tip: <code>CSE12</code> or <code>CSE 12</code> both work. Press Enter to generate.
-        </div>
+  <div className="small" style={{ marginTop: 8 }}>
+    Tip: <span className="code">CSE12</span> or <span className="code">CSE 12</span> both work.
+  </div>
 
-        <div style={{ marginTop: 6, fontSize: 12, color: "#888" }}>
-          Active: <strong>{activeTermId}</strong> · <strong>{(activeCoursesToTake || []).join(", ")}</strong> · maxUnits{" "}
-          <strong>{activeConstraints?.maxUnits}</strong>
-        </div>
-      </div>
+  <div className="small" style={{ marginTop: 6, opacity: 0.9 }}>
+    Active: <strong>{activeTermId}</strong> · <strong>{(activeCoursesToTake || []).join(", ")}</strong> · maxUnits{" "}
+    <strong>{activeConstraints?.maxUnits}</strong>
+  </div>
+</div>
+
 
       {/* Empty state (after inputs) */}
       {!schedules.length ? (
-        <div style={{ padding: 20 }}>
-          <div style={{ color: "#666", marginBottom: 8 }}>No valid schedules found.</div>
+        <div className="card">
+          <div className="muted" style={{ marginBottom: 8 }}>No valid schedules found.</div>
 
           {diagnostic && (
-            <div style={{ marginBottom: 12, color: "#b45309" }}>
+            <div className="warn" style={{ marginBottom: 12 }}>
               <strong>Why:</strong> {diagnostic}
             </div>
           )}
 
-          {/* Debug panel */}
-          <div style={{ background: "#fafafa", border: "1px solid #eee", padding: 12, borderRadius: 8 }}>
-            <div style={{ fontWeight: 700, marginBottom: 6 }}>Debug: raw /api/generate-schedules response</div>
-            <pre style={{ margin: 0, whiteSpace: "pre-wrap" }}>
-              {rawResp ? JSON.stringify(rawResp, null, 2) : "(no response captured)"}
-            </pre>
-          </div>
+           <button className="btn" onClick={() => setShowDebug((v) => !v)}>
+            {showDebug ? "Hide Debug" : "Show Debug"}
+          </button>
+
+          {showDebug && (
+            <div className="notice" style={{ marginTop: 12 }}>
+              <div style={{ fontWeight: 700, marginBottom: 6 }}>Debug: raw /api/generate-schedules response</div>
+              <pre style={{ margin: 0, whiteSpace: "pre-wrap" }}>
+                {rawResp ? JSON.stringify(rawResp, null, 2) : "(no response captured)"}
+              </pre>
+            </div>
+          )}
         </div>
       ) : (
         <>
@@ -467,13 +479,14 @@ export default function ScheduleViewer({
           </h2>
 
           {/* Toggle */}
-          <div style={{ display: "flex", gap: 8, marginBottom: 12 }}>
-            <button onClick={() => setIndex((i) => (i - 1 + schedules.length) % schedules.length)}>Prev</button>
-            <button onClick={() => setIndex((i) => (i + 1) % schedules.length)}>Next</button>
+          <div className="btnRow" style={{ marginBottom: 12 }}>
+            <button className="btn" onClick={() => setIndex((i) => (i - 1 + schedules.length) % schedules.length)}>Prev</button>
+            <button className="btn" onClick={() => setIndex((i) => (i + 1) % schedules.length)}>Next</button>
           </div>
 
+
           {/* Score Breakdown */}
-          <div style={{ border: "1px solid #ddd", borderRadius: 8, padding: 12, marginBottom: 16 }}>
+          <div className="card" style={{ marginBottom: 16 }}>
             <div style={{ fontWeight: 700, marginBottom: 6 }}>Score</div>
 
             {scoreErr ? (
@@ -482,14 +495,22 @@ export default function ScheduleViewer({
               <div style={{ color: "#666" }}>Scoring…</div>
             ) : selectedScore ? (
               <div>
-                <div style={{ fontSize: 18, fontWeight: 800, marginBottom: 6 }}>Total: {selectedScore.totalScore}</div>
+                <div style={{ display: "flex", alignItems: "baseline", gap: 10, marginBottom: 10 }}>
+  <div style={{ fontSize: 22, fontWeight: 900 }}>
+    {selectedScore.totalScore}
+  </div>
+  <div className="muted">Total score</div>
+</div>
 
-                <div style={{ color: "#333", marginBottom: 8 }}>
-                  Workload: {selectedScore.breakdown?.workload ?? "—"} · Timing: {selectedScore.breakdown?.timing ?? "—"} ·
-                  Professor: {selectedScore.breakdown?.professor ?? "—"} · Vibe: {selectedScore.breakdown?.vibeFit ?? "—"}
-                </div>
+<div className="chips" style={{ marginBottom: 10 }}>
+  <div className="chip"><strong>Workload</strong> {selectedScore.breakdown?.workload ?? "—"}</div>
+  <div className="chip"><strong>Timing</strong> {selectedScore.breakdown?.timing ?? "—"}</div>
+  <div className="chip"><strong>Professor</strong> {selectedScore.breakdown?.professor ?? "—"}</div>
+  <div className="chip"><strong>Vibe</strong> {selectedScore.breakdown?.vibeFit ?? "—"}</div>
+</div>
 
-                <ul style={{ margin: 0, paddingLeft: 18, color: "#555" }}>
+
+                <ul className="list" style={{ color: "#475569" }}>
                   {Array.isArray(selectedScore.explanations) &&
                     selectedScore.explanations.map((e, i) => <li key={i}>{e}</li>)}
                 </ul>
@@ -504,13 +525,11 @@ export default function ScheduleViewer({
             {/* Header row */}
             <div />
             {DAY_KEYS.map((d) => (
-              <div key={d} style={{ fontWeight: 700, textAlign: "center" }}>
-                {DAY_LABELS[d]}
-              </div>
+              <div key={d} className="gridHeader">{DAY_LABELS[d]}</div>
             ))}
 
             {/* Time column */}
-            <div style={{ position: "relative", height: (DAY_END_MIN - DAY_START_MIN) * PX_PER_MIN }}>
+            <div className="timeCol">
               {Array.from({ length: (DAY_END_MIN - DAY_START_MIN) / 60 + 1 }).map((_, i) => {
                 const t = DAY_START_MIN + i * 60;
                 const top = (t - DAY_START_MIN) * PX_PER_MIN;
@@ -527,32 +546,13 @@ export default function ScheduleViewer({
               const dayBlocks = blocks.filter((b) => b.day === day);
 
               return (
-                <div
-                  key={day}
-                  style={{
-                    position: "relative",
-                    height: (DAY_END_MIN - DAY_START_MIN) * PX_PER_MIN,
-                    border: "1px solid #ddd",
-                    borderRadius: 8,
-                    overflow: "hidden",
-                    background: "white",
-                  }}
-                >
+                <div key={day} className="dayCol">
                   {/* hour lines */}
                   {Array.from({ length: (DAY_END_MIN - DAY_START_MIN) / 60 + 1 }).map((_, i) => {
                     const t = DAY_START_MIN + i * 60;
                     const top = (t - DAY_START_MIN) * PX_PER_MIN;
                     return (
-                      <div
-                        key={t}
-                        style={{
-                          position: "absolute",
-                          top,
-                          left: 0,
-                          right: 0,
-                          borderTop: "1px solid #f0f0f0",
-                        }}
-                      />
+                      <div key={t} className="hourLine" style={{ top }} />
                     );
                   })}
 
@@ -567,25 +567,13 @@ export default function ScheduleViewer({
                       <div
                         key={`${b.courseId}-${day}-${b.startMin}-${i}`}
                         title={`${b.courseId} (${minToLabel(b.startMin)}–${minToLabel(b.endMin)})`}
-                        style={{
-                          position: "absolute",
-                          top,
-                          left: 6,
-                          right: 6,
-                          height,
-                          borderRadius: 8,
-                          border: "1px solid #cbd5e1",
-                          background: "#e2e8f0",
-                          padding: "6px 8px",
-                          fontSize: 12,
-                          overflow: "hidden",
-                        }}
+                        className="block"
+                        style={{ top, height }}
                       >
-                        <div style={{ fontWeight: 700 }}>{b.courseId}</div>
-                        <div style={{ color: "#475569" }}>
-                          {minToLabel(b.startMin)}–{minToLabel(b.endMin)}
-                        </div>
+                        <div className="blockTitle">{b.courseId}</div>
+                        <div className="blockTime">{minToLabel(b.startMin)}–{minToLabel(b.endMin)}</div>
                       </div>
+
                     );
                   })}
                 </div>
@@ -594,10 +582,16 @@ export default function ScheduleViewer({
           </div>
 
           {/* Debug panel (optional) */}
-          <div style={{ marginTop: 16, background: "#fafafa", border: "1px solid #eee", padding: 12, borderRadius: 8 }}>
-            <div style={{ fontWeight: 700, marginBottom: 6 }}>Debug: raw /api/generate-schedules response</div>
-            <pre style={{ margin: 0, whiteSpace: "pre-wrap" }}>{JSON.stringify(rawResp, null, 2)}</pre>
-          </div>
+          <button className="btn" onClick={() => setShowDebug((v) => !v)} style={{ marginTop: 16 }}>
+            {showDebug ? "Hide Debug" : "Show Debug"}
+          </button>
+
+          {showDebug && (
+            <div className="notice" style={{ marginTop: 12 }}>
+              <div style={{ fontWeight: 700, marginBottom: 6 }}>Debug: raw /api/generate-schedules response</div>
+              <pre style={{ margin: 0, whiteSpace: "pre-wrap" }}>{JSON.stringify(rawResp, null, 2)}</pre>
+            </div>
+          )}
         </>
       )}
     </div>
