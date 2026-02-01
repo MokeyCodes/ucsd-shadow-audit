@@ -53,8 +53,23 @@
         {
           "sectionId": "A00",
           "meetings": [
-            { "day": "T", "startMin": 660, "endMin": 750 },
-            { "day": "Th", "startMin": 660, "endMin": 750 }
+            { "day": "T", "startMin": 480, "endMin": 570 },
+            { "day": "Th", "startMin": 480, "endMin": 570 }
+          ],
+          "instructor": "Smith"
+        }
+      ]
+    },
+    {
+      "courseId": "MATH20C",
+      "units": 4,
+      "sections": [
+        {
+          "sectionId": "A00",
+          "meetings": [
+            { "day": "M", "startMin": 1120, "endMin": 1170 },
+            { "day": "W", "startMin": 1120, "endMin": 1170 },
+            { "day": "F", "startMin": 1120, "endMin": 1170 }
           ],
           "instructor": "Smith"
         }

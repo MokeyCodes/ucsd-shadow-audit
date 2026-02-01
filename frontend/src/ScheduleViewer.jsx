@@ -1,4 +1,20 @@
 import React, { useEffect, useMemo, useState } from "react";
+import Picker from "react-mobile-picker";
+
+const TIME_PREF_OPTIONS = ["NIGHT_OWL", "NEUTRAL", "EARLY_BIRD"];
+const LABELS = {
+  NEUTRAL: "Neutral",
+  NIGHT_OWL: "Night Owl",
+  EARLY_BIRD: "Early Bird",
+};
+
+const RIGOR_PREF_OPTIONS = ["EXAM_BASED", "NONE", "PROJECT_BASED"];
+const RIGOR_LABELS = {
+  NONE: "No pref",
+  EXAM_BASED: "Prefer exams",
+  PROJECT_BASED: "Prefer projects",
+};
+
 
 const API_BASE = "http://localhost:3001";
 
@@ -83,6 +99,8 @@ export default function ScheduleViewer({
   coursesToTake = DEMO_COURSES,
   constraints = DEMO_CONSTRAINTS,
 }) {
+  const [timePreference, setTimePreference] = useState("NEUTRAL");
+  const [rigorPreference, setRigorPreference] = useState("NONE");
   // ----- Draft inputs (what user is typing) -----
   const [draftTermId, setDraftTermId] = useState(termId);
   const [draftCoursesText, setDraftCoursesText] = useState((coursesToTake || DEMO_COURSES).join(", "));
@@ -113,6 +131,10 @@ export default function ScheduleViewer({
   const [showDebug, setShowDebug] = useState(false);
 
   const selected = schedules[index];
+
+  useEffect(() => {
+  setScoresByScheduleId({});
+}, [timePreference]);
 
   // ---- Fetch schedules (driven by ACTIVE inputs) ----
   useEffect(() => {
@@ -222,7 +244,13 @@ export default function ScheduleViewer({
         const res = await fetch(`${API_BASE}/api/score-schedule`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ schedule: selected }),
+          body: JSON.stringify({
+            schedule: selected,
+            preferences: {
+              timeOfDay: timePreference,
+              rigorStyle: rigorPreference, 
+            },
+          }),
         });
 
         const json = await res.json();
@@ -247,7 +275,7 @@ export default function ScheduleViewer({
     return () => {
       alive = false;
     };
-  }, [selected, scoresByScheduleId]);
+  }, [selected, scoresByScheduleId, timePreference]);
 
   // ---- Diagnose why schedules are empty ----
   useEffect(() => {
@@ -414,6 +442,49 @@ export default function ScheduleViewer({
       />
     </div>
 
+    <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+  <label className="small">Preference</label>
+
+  <div className="wheelBox">
+    <Picker
+      value={{ pref: timePreference }}
+      onChange={(val) => setTimePreference(val.pref)}
+      height={140}
+      itemHeight={36}
+    >
+      <Picker.Column name="pref">
+        {TIME_PREF_OPTIONS.map((opt) => (
+          <Picker.Item key={opt} value={opt}>
+            {LABELS[opt]}
+          </Picker.Item>
+        ))}
+      </Picker.Column>
+    </Picker>
+  </div>
+  <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+  <label className="small">Learning Style</label>
+
+  <div className="wheelBox">
+    <Picker
+      value={{ rigor: rigorPreference }}
+      onChange={(val) => setRigorPreference(val.rigor)}
+      height={140}
+      itemHeight={36}
+    >
+      <Picker.Column name="rigor">
+        {RIGOR_PREF_OPTIONS.map((opt) => (
+          <Picker.Item key={opt} value={opt}>
+            {RIGOR_LABELS[opt]}
+          </Picker.Item>
+        ))}
+      </Picker.Column>
+    </Picker>
+  </div>
+</div>
+
+</div>
+
+
     <button
       className="btn btnPrimary"
       onClick={() => {
@@ -506,7 +577,7 @@ export default function ScheduleViewer({
   <div className="chip"><strong>Workload</strong> {selectedScore.breakdown?.workload ?? "—"}</div>
   <div className="chip"><strong>Timing</strong> {selectedScore.breakdown?.timing ?? "—"}</div>
   <div className="chip"><strong>Professor</strong> {selectedScore.breakdown?.professor ?? "—"}</div>
-  <div className="chip"><strong>Vibe</strong> {selectedScore.breakdown?.vibeFit ?? "—"}</div>
+  <div className="chip"><strong>Schedule Shape</strong> {selectedScore.breakdown?.shape ?? "—"}</div>
 </div>
 
 

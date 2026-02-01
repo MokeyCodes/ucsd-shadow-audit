@@ -30,7 +30,6 @@ app.post('/api/generate-schedules', (req, res) => {
   const termId = req.body.termId || 'SP26';
   const coursesToTake = req.body.coursesToTake || [];
   const constraints = req.body.constraints || { maxUnits: 16 };
-
   const schedules = generateSchedules({ termId, coursesToTake, constraints, catalog });
 
   res.json({ schedules });
@@ -38,16 +37,19 @@ app.post('/api/generate-schedules', (req, res) => {
 
 app.post("/api/score-schedule", (req, res) => {
   try {
-    const { schedule } = req.body || {};
+    const { schedule, preferences } = req.body || {};
     if (!schedule) {
       return res.status(400).json({ error: "Missing 'schedule' in request body" });
     }
-    const result = scoreSchedule(schedule);
+
+    const result = scoreSchedule(schedule, preferences);
     return res.json(result);
   } catch (err) {
+    console.error(err);
     return res.status(500).json({ error: "Failed to score schedule" });
   }
 });
+
 
 
 

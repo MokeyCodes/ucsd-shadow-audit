@@ -1,11 +1,18 @@
 {
   "name": "ucsd-shadow-audit",
   "private": true,
-  "workspaces": ["frontend", "backend"],
+  "workspaces": [
+    "frontend",
+    "backend"
+  ],
   "scripts": {
     "dev": "concurrently \"npm run dev --workspace backend\" \"npm run dev --workspace frontend\""
   },
   "devDependencies": {
     "concurrently": "^9.0.0"
+  },
+  "dependencies": {
+    "mobile": "^0.0.1",
+    "picker": "^0.1.4"
   }
 }

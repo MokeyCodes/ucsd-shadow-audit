@@ -296,3 +296,19 @@
   margin-top: 2px;
 }
 
+/* Wheel picker container */
+.wheelBox {
+  width: 180px;
+  border: 1px solid #ddd;
+  border-radius: 12px;
+  padding: 6px;
+
+  /* KEY: this helps it look centered */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  /* optional */
+  background: white;
+}
+
