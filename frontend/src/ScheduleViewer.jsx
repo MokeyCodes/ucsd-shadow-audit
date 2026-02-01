@@ -40,11 +40,13 @@ function flattenMeetings(schedule) {
   return blocks;
 }
 
+const DEMO_COURSES = ["CSE11", "MATH20A"];
+const DEMO_CONSTRAINTS = { maxUnits: 16 };
 export default function ScheduleViewer({
   // DEMO DEFAULTS: App.jsx should pass real values later.
   termId = "SP26",
-  coursesToTake = ["CSE11", "MATH20A"],
-  constraints = { maxUnits: 16 },
+  coursesToTake = DEMO_COURSES,
+  constraints = DEMO_CONSTRAINTS,
 }) {
   const [schedules, setSchedules] = useState([]);
   const [loading, setLoading] = useState(false);
