@@ -442,8 +442,9 @@ export default function ScheduleViewer({
       />
     </div>
 
+<div style={{ display: "flex", gap: 24, alignItems: "flex-end" }}>
     <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-  <label className="small">Preference</label>
+  <label className="small">Time Preference</label>
 
   <div className="wheelBox">
     <Picker
@@ -460,6 +461,7 @@ export default function ScheduleViewer({
         ))}
       </Picker.Column>
     </Picker>
+    </div>
   </div>
   <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
   <label className="small">Learning Style</label>
@@ -481,6 +483,7 @@ export default function ScheduleViewer({
     </Picker>
   </div>
 </div>
+
 
 </div>
 
