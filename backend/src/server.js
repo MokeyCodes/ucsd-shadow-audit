@@ -4,6 +4,7 @@ const catalog = require('./data/catalog.json');
 const degree = require('./data/sample_degree.json');
 const { runAuditWithExpansion } = require("./runAuditWithExpansion");
 const { generateSchedules } = require('./scheduleGenerator'); // Issue #3
+const { scoreSchedule } = require("./scheduleScorer");
 
 
 const app = express();
@@ -34,6 +35,20 @@ app.post('/api/generate-schedules', (req, res) => {
 
   res.json({ schedules });
 });
+
+app.post("/api/score-schedule", (req, res) => {
+  try {
+    const { schedule } = req.body || {};
+    if (!schedule) {
+      return res.status(400).json({ error: "Missing 'schedule' in request body" });
+    }
+    const result = scoreSchedule(schedule);
+    return res.json(result);
+  } catch (err) {
+    return res.status(500).json({ error: "Failed to score schedule" });
+  }
+});
+
 
 
 const PORT = process.env.PORT || 3001;

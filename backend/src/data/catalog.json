@@ -45,6 +45,20 @@
           ]
         }
       ]
+    },
+    {
+      "courseId": "CSE12",
+      "units": 4,
+      "sections": [
+        {
+          "sectionId": "A00",
+          "meetings": [
+            { "day": "T", "startMin": 660, "endMin": 750 },
+            { "day": "Th", "startMin": 660, "endMin": 750 }
+          ],
+          "instructor": "Smith"
+        }
+      ]
     }
   ]
 }
