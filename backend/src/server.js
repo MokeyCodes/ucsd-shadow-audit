@@ -2,7 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const catalog = require('./data/catalog.json');
 const degree = require('./data/sample_degree.json');
-const { runAudit } = require('./auditEngine');
+const { runAuditWithExpansion } = require("./runAuditWithExpansion");
 const { generateSchedules } = require('./scheduleGenerator'); // Issue #3
 
 
@@ -21,7 +21,7 @@ app.get('/data/degree', (_req, res) => {
 // Accept manual credits array and return deterministic audit
 app.post('/api/audit', (req, res) => {
   const credits = req.body.credits || [];
-  const result = runAudit(credits, degree);
+  const result = runAuditWithExpansion(credits, degree);
   res.json(result);
 });
 
