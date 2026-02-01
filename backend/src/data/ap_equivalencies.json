@@ -1,0 +1,73 @@
+{
+  "AP:Calculus AB": {
+    "minScore": 4,
+    "courses": ["MATH20A"],
+    "justification": "UCSD AP policy: Calculus AB score ≥4 grants MATH 20A"
+  },
+
+  "AP:Calculus BC": {
+    "minScore": 4,
+    "courses": ["MATH20A", "MATH20B"],
+    "justification": "UCSD AP policy: Calculus BC score ≥4 grants MATH 20A and 20B"
+  },
+
+  "AP:Computer Science A": {
+    "minScore": 4,
+    "courses": ["CSE11"],
+    "justification": "UCSD AP policy: Computer Science A score ≥4 grants CSE 11"
+  },
+
+  "AP:Physics C Mechanics": {
+    "minScore": 4,
+    "courses": ["PHYS2A"],
+    "justification": "UCSD AP policy: Physics C Mechanics score ≥4 grants PHYS 2A"
+  },
+
+  "AP:Physics C Electricity and Magnetism": {
+    "minScore": 4,
+    "courses": ["PHYS2B"],
+    "justification": "UCSD AP policy: Physics C E&M score ≥4 grants PHYS 2B"
+  },
+
+  "AP:Chemistry": {
+    "minScore": 4,
+    "courses": ["CHEM6A"],
+    "justification": "UCSD AP policy: Chemistry score ≥4 grants CHEM 6A"
+  },
+
+  "AP:Biology": {
+    "minScore": 4,
+    "courses": ["BILD1"],
+    "justification": "UCSD AP policy: Biology score ≥4 grants BILD 1"
+  },
+
+  "AP:Statistics": {
+    "minScore": 4,
+    "courses": ["MATH11"],
+    "justification": "UCSD AP policy: Statistics score ≥4 grants MATH 11"
+  },
+
+  "AP:English Language and Composition": {
+    "minScore": 4,
+    "courses": ["WCWP10A"],
+    "justification": "UCSD AP policy: English Language score ≥4 satisfies lower-division writing requirement"
+  },
+
+  "AP:Microeconomics": {
+    "minScore": 4,
+    "courses": ["ECON1"],
+    "justification": "UCSD AP policy: Microeconomics score ≥4 grants ECON 1"
+  },
+
+  "AP:Macroeconomics": {
+    "minScore": 4,
+    "courses": ["ECON3"],
+    "justification": "UCSD AP policy: Macroeconomics score ≥4 grants ECON 3"
+  },
+
+  "AP:Environmental Science": {
+    "minScore": 4,
+    "courses": ["ESYS10"],
+    "justification": "UCSD AP policy: Environmental Science score ≥4 grants ESYS 10"
+  }
+}
