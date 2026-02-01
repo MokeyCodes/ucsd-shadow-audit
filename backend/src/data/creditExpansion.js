@@ -2,19 +2,29 @@ const apEquivalencies = require("./ap_equivalencies.json");
 
 /**
  * Input: ManualCredit[]
- * Output: string[] (canonical UCSD courseIds)
+ * Output:
+ * {
+ *   courseIds: string[],
+ *   logs: { requirementId: string, matchedBy: string, reason: string }[]
+ * }
  */
 function expandCredits(credits) {
-  const expanded = [];
+  const courseIds = [];
+  const logs = [];
 
   for (const credit of credits) {
-    if (credit.kind !== "AP") continue;
+    if (!credit || credit.kind !== "AP" || typeof credit.label !== "string") continue;
 
-    // Example label: "AP Calculus AB (5)"
-    const match = credit.label.match(/^AP (.+) \((\d)\)$/);
+    const label = credit.label.trim();
+
+    // Accept:
+    // "AP Calculus AB (5)"
+    // "AP:Calculus AB (5)"
+    // "AP Calculus AB (Score 5)"
+    const match = label.match(/^AP[: ](.+?)\s*\(\s*(?:Score\s*)?(\d)\s*\)\s*$/i);
     if (!match) continue;
 
-    const examName = match[1];
+    const examName = match[1].trim();
     const score = Number(match[2]);
 
     const key = `AP:${examName}`;
@@ -23,10 +33,19 @@ function expandCredits(credits) {
     if (!rule) continue;
     if (score < rule.minScore) continue;
 
-    expanded.push(...rule.courses);
+    // Add course IDs
+    courseIds.push(...rule.courses);
+
+    // Explainability log
+    logs.push({
+      requirementId: "CREDIT_EXPANSION",
+      matchedBy: label,
+      reason: `${rule.justification}; expanded to: ${rule.courses.join(", ")}`
+    });
   }
 
-  return expanded;
+  return { courseIds, logs };
 }
 
 module.exports = { expandCredits };
+
