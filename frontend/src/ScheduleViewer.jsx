@@ -29,7 +29,8 @@ function flattenMeetings(schedule) {
   for (const course of schedule?.courses || []) {
     for (const mtg of course?.meetings || []) {
       blocks.push({
-        courseId: course.courseId || course.title || "COURSE",
+        // Contract: courseId exists; do not rely on non-contract fields like "title"
+        courseId: course.courseId || "COURSE",
         day: mtg.day,
         startMin: mtg.startMin,
         endMin: mtg.endMin,
@@ -39,15 +40,16 @@ function flattenMeetings(schedule) {
   return blocks;
 }
 
-export default function ScheduleViewer() {
+export default function ScheduleViewer({
+  // DEMO DEFAULTS: App.jsx should pass real values later.
+  termId = "SP26",
+  coursesToTake = ["CSE11", "MATH20A"],
+  constraints = { maxUnits: 16 },
+}) {
   const [schedules, setSchedules] = useState([]);
   const [loading, setLoading] = useState(false);
   const [loadErr, setLoadErr] = useState("");
   const [index, setIndex] = useState(0);
-
-  const [scoreLoading, setScoreLoading] = useState(false);
-  const [scoreErr, setScoreErr] = useState("");
-  const [scoreResp, setScoreResp] = useState(null);
 
   // Debug: show raw response
   const [rawResp, setRawResp] = useState(null);
@@ -66,13 +68,8 @@ export default function ScheduleViewer() {
       setRawResp(null);
 
       try {
-        // ✅ IMPORTANT: use canonical IDs (no spaces)
-        // Replace these later with real inputs from your app state.
-        const payload = {
-          termId: "SP26",
-          coursesToTake: ["CSE11", "MATH20A"],
-          constraints: { maxUnits: 16 },
-        };
+        // DEMO NOTE: these come from props (defaults above).
+        const payload = { termId, coursesToTake, constraints };
 
         const res = await fetch(`${API_BASE}/api/generate-schedules`, {
           method: "POST",
@@ -85,7 +82,7 @@ export default function ScheduleViewer() {
 
         setRawResp(json);
 
-        // ✅ IMPORTANT: API returns { schedules: Schedule[] }
+        // API returns { schedules: Schedule[] }
         const arr = Array.isArray(json?.schedules) ? json.schedules : [];
         setSchedules(arr);
       } catch (e) {
@@ -104,48 +101,12 @@ export default function ScheduleViewer() {
     return () => {
       alive = false;
     };
-  }, []);
+  }, [termId, coursesToTake, constraints]);
 
   // Keep index in bounds
   useEffect(() => {
     if (index >= schedules.length) setIndex(0);
   }, [schedules.length, index]);
-
-  // ---- Fetch score breakdown for selected schedule ----
-  useEffect(() => {
-    let alive = true;
-
-    async function fetchScore() {
-      setScoreResp(null);
-      setScoreErr("");
-
-      if (!selected) return;
-
-      setScoreLoading(true);
-      try {
-        const res = await fetch(`${API_BASE}/api/score-schedule`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ schedule: selected }),
-        });
-
-        const json = await res.json();
-        if (!alive) return;
-        setScoreResp(json);
-      } catch (e) {
-        if (!alive) return;
-        setScoreErr("Scoring unavailable (endpoint not ready).");
-      } finally {
-        if (!alive) return;
-        setScoreLoading(false);
-      }
-    }
-
-    fetchScore();
-    return () => {
-      alive = false;
-    };
-  }, [selected]);
 
   const blocks = useMemo(() => flattenMeetings(selected), [selected]);
 
@@ -182,35 +143,10 @@ export default function ScheduleViewer() {
         <button onClick={() => setIndex((i) => (i + 1) % schedules.length)}>Next</button>
       </div>
 
-      {/* Score Breakdown */}
+      {/* Score Breakdown (Issue #4 will wire real scoring later) */}
       <div style={{ border: "1px solid #ddd", borderRadius: 8, padding: 12, marginBottom: 16 }}>
         <div style={{ fontWeight: 700, marginBottom: 6 }}>Score</div>
-
-        {scoreLoading && <div style={{ color: "#666" }}>Scoring…</div>}
-        {scoreErr && <div style={{ color: "#b45309" }}>{scoreErr}</div>}
-
-        {scoreResp && (
-          <div style={{ fontSize: 14, lineHeight: 1.4 }}>
-            <div>
-              <b>Total Score:</b> {scoreResp.totalScore ?? "—"}
-            </div>
-            <div style={{ marginTop: 6 }}>
-              <b>Breakdown:</b>{" "}
-              {scoreResp.breakdown
-                ? `workload=${scoreResp.breakdown.workload ?? "—"}, timing=${scoreResp.breakdown.timing ?? "—"}, professor=${
-                    scoreResp.breakdown.professor ?? "—"
-                  }, vibeFit=${scoreResp.breakdown.vibeFit ?? "—"}`
-                : "—"}
-            </div>
-            {Array.isArray(scoreResp.explanations) && scoreResp.explanations.length > 0 && (
-              <ul style={{ marginTop: 8 }}>
-                {scoreResp.explanations.slice(0, 6).map((t, i) => (
-                  <li key={i}>{t}</li>
-                ))}
-              </ul>
-            )}
-          </div>
-        )}
+        <div style={{ color: "#666" }}>Score breakdown coming soon.</div>
       </div>
 
       {/* Weekly Grid */}
